@@ -1,0 +1,8 @@
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\bin\Release\Polynomials.exe.config
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\bin\Release\Polynomials.exe
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\bin\Release\Polynomials.pdb
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\obj\Release\Polynomials.Form1.resources
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\obj\Release\Polynomials.Properties.Resources.resources
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\obj\Release\Polynomials.csproj.GenerateResource.Cache
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\obj\Release\Polynomials.exe
+D:\Универ\ТЧМК\Polinomial\Polynomials\Polynomials\obj\Release\Polynomials.pdb

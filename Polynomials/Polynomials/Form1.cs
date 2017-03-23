@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Polynomials
@@ -77,7 +79,7 @@ namespace Polynomials
 			createPol(secondPolinomial.Text, sPol);
 			balancingPolinomial();
 			textBoxForResult.Text = sub(result);
-			createPol(textBoxForResult.Text, r);
+			//createPol(textBoxForResult.Text, r);
 		}
 
 		private void buttonForSave_Click(object sender, EventArgs e)
@@ -173,111 +175,186 @@ namespace Polynomials
 
 		public string summ(List<int> result)
 		{
+			List<TimeSpan> resTime1 = new List<TimeSpan>();
+			List<TimeSpan> resTime2 = new List<TimeSpan>();
+
 			string res = "";
-			bool flag = false;
-			for (int i = 0; i < fPol.Count; i++)
+			int ch = 0;
+			do
 			{
-				result = new List<int>();
-				balancingCoefficient(i);
-				for (int j = fPol[i].Count - 1; j >= 0; j--)
+				res = "";
+				DateTime time1 = DateTime.Now;
+				Stopwatch stopWatch = new Stopwatch();
+				stopWatch.Start();
+
+				bool flag = false;
+				for (int i = 0; i < fPol.Count; i++)
 				{
-					int sum = fPol[i][j] + sPol[i][j];
-					if (sum >= 10)
+					result = new List<int>();
+					balancingCoefficient(i);
+					for (int j = fPol[i].Count - 1; j >= 0; j--)
 					{
-						result.Insert(0, sum - 10);
-
-						for (int k = 1;  ; k++)
+						int sum = fPol[i][j] + sPol[i][j];
+						if (sum >= 10)
 						{
-							if (j - k < 0)
-							{
-								flag = true;
-								break;
-							}
+							result.Insert(0, sum - 10);
 
-							if(fPol[i][j - k] >= 9)
-								fPol[i][j - k] = 0;
-							else
+							for (int k = 1; ; k++)
 							{
-								fPol[i][j - k] += 1;
-								break;
+								if (j - k < 0)
+								{
+									flag = true;
+									break;
+								}
+
+								if (fPol[i][j - k] >= 9)
+									fPol[i][j - k] = 0;
+								else
+								{
+									fPol[i][j - k] += 1;
+									break;
+								}
 							}
 						}
+						else result.Insert(0, sum);
 					}
-					else result.Insert(0, sum);
+					if (flag)
+						res += "1";
+					foreach (var el in result)
+						res += el;
+					for (int t = 0; t < res.Count(); t++)
+					{
+						if (res[t] == '0')
+							res = res.Remove(t, 1);
+						else break;
+					}
+
+					res += " ";
+					flag = false;
 				}
-				if (flag)
-					res += "1";
-				foreach (var el in result)
-					res += el;
-				res += " ";
-			}
+
+				DateTime time2 = DateTime.Now;
+				stopWatch.Stop();
+				resTime1.Add(stopWatch.Elapsed);
+				resTime2.Add(time2-time1);
+				ch++;
+			} while (ch < 1000);
+
+			long t1 = 0;
+			long t2 = 0;
+
+			foreach (var el in resTime1)
+				t1 += el.Ticks;
+			foreach (var el in resTime2)
+				t2 += el.Ticks;
+
+			textBoxForTime1.Text = (t1 / 1000).ToString() + " ticks";
+			textBoxForTime2.Text = (t2 / 1000).ToString() + " ticks";
 			return res;
 		}
 
 		public string sub(List<int> result)
 		{
-			List<int> a = new List<int>();
-			List<int> b = new List<int>();
+			List<TimeSpan> resTime1 = new List<TimeSpan>();
+			List<TimeSpan> resTime2 = new List<TimeSpan>();
+
 			string res = "";
-			bool flag1 = false;
-			bool flag2 = false;
-			for (int i = 0; i < fPol.Count; i++)
+			int ch = 0;
+			do
 			{
-				result = new List<int>();
-				balancingCoefficient(i);
-				for(int l = i; l < fPol.Count; l++)
-				{
-					if (fPol[i][0] > sPol[i][0])
-					{
-						a = fPol[i];
-						b = sPol[i];
-						break;
-					}
-					else if (fPol[i][0] < sPol[i][0])
-					{
-						a = sPol[i];
-						b = fPol[i];
-						flag2 = true;
-						break;
-					}
-				}
-				/////////////////////////////////////////
-				for (int j = fPol[i].Count - 1; j >= 0; j--)
-				{
-					int sub = a[j] - b[j];
-					if (sub >= 10)
-					{
-						result.Insert(0, sub - 10);
+				res = "";
+				DateTime time1 = DateTime.Now;
+				Stopwatch stopWatch = new Stopwatch();
+				stopWatch.Start();
 
-						for (int k = 1; ; k++)
+				List<int> a = new List<int>();
+				List<int> b = new List<int>();
+				res = "";
+				bool flag1 = false;
+				bool flag2 = false;
+
+				for (int i = 0; i < fPol.Count; i++)
+				{
+					result = new List<int>();
+					balancingCoefficient(i);
+					int l;
+					for (l = 0; l < fPol[i].Count; l++)
+					{
+						if (fPol[i][l] > sPol[i][l])
 						{
-							if (j - k < 0)
+							a = fPol[i];
+							b = sPol[i];
+							break;
+						}
+						else if (fPol[i][l] < sPol[i][l])
+						{
+							a = sPol[i];
+							b = fPol[i];
+							flag2 = true;
+							break;
+						}
+					}
+					if (l == fPol[i].Count)
+						res += "0";
+					else
+					{
+						for (int j = a.Count - 1; j >= 0; j--)
+						{
+							if (a[j] < b[j])
 							{
-								flag1 = true;
-								break;
+								a[j] += 10;
+								for (int k = 1; ; k++)
+								{
+									if (a[j - k] == 0)
+										a[j - k] = 9;
+									else
+									{
+										a[j - k] -= 1;
+										break;
+									}
+								}
 							}
-
-							if (fPol[i][j - k] >= 9)
-								fPol[i][j - k] = 0;
-							else
+							int sub = a[j] - b[j];
+							result.Insert(0, sub);
+						}
+						if (flag2)
+							res += "-";
+						if (flag1)
+							res += "1";
+						foreach (var el in result)
+							res += el;
+						for (int t = 0; t < res.Count(); t++)
+						{
+							if (res[t] != '-')
 							{
-								fPol[i][j - k] += 1;
-								break;
+								if (res[t] == '0')
+									res = res.Remove(t, 1);
+								else break;
 							}
 						}
 					}
-					else result.Insert(0, sub);
+					res += " ";
+					flag1 = false;
+					flag2 = false;
 				}
-				if (flag2)
-					res += "-";
-				if (flag1)
-					res += "1";
-				foreach (var el in result)
-					res += el;
-				res += " ";
-				flag1 = false;
-				flag2 = false;
-			}
+				DateTime time2 = DateTime.Now;
+				stopWatch.Stop();
+				resTime1.Add(stopWatch.Elapsed);
+				resTime2.Add(time2 - time1);
+				ch++;
+			} while (ch < 1000);
+
+			long t1 = 0;
+			long t2 = 0;
+
+			foreach (var el in resTime1)
+				t1 += el.Ticks;
+			foreach (var el in resTime2)
+				t2 += el.Ticks;
+
+			textBoxForTime1.Text = (t1 / 1000).ToString() + " ticks";
+			textBoxForTime2.Text = (t2 / 1000).ToString() + " ticks";
+
 			return res;
 		}
 	}
